@@ -17,6 +17,11 @@ open class Toast: Operation {
     set { self.view.text = newValue }
   }
   
+  @objc public var viewController: UIViewController? {
+    get { return self.viewController }
+    set { self.viewController = newValue }
+  }
+  
   @objc public var attributedText: NSAttributedString? {
     get { return self.view.attributedText }
     set { self.view.attributedText = newValue }
@@ -65,6 +70,15 @@ open class Toast: Operation {
     super.init()
     self.text = text
   }
+  
+  @objc public init(text: String?, onViewController viewController: UIViewController, delay: TimeInterval = 0, duration: TimeInterval = Delay.short) {
+    self.delay = delay
+    self.duration = duration
+    super.init()
+    self.text = text
+    self.viewController = viewController
+  }
+
 
   @objc public init(attributedText: NSAttributedString?, delay: TimeInterval = 0, duration: TimeInterval = Delay.short) {
     self.delay = delay
@@ -128,7 +142,10 @@ open class Toast: Operation {
     DispatchQueue.main.async {
       self.view.setNeedsLayout()
       self.view.alpha = 0
-      ToastWindow.shared.addSubview(self.view)
+      if let vc = self.viewController {
+        self.view.viewController = vc
+        vc.view.addSubview(self.view)
+      }
 
       UIView.animate(
         withDuration: 0.5,

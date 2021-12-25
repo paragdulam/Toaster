@@ -116,6 +116,12 @@ open class ToastView: UIView {
     get { return self.layer.shadowRadius }
     set { self.layer.shadowRadius = newValue }
   }
+  
+  @objc open dynamic var viewController: UIViewController {
+    get { return self.viewController }
+    set { self.viewController = newValue }
+  }
+
 
   // MARK: UI
 
@@ -170,7 +176,7 @@ open class ToastView: UIView {
 
   override open func layoutSubviews() {
     super.layoutSubviews()
-    let containerSize = ToastWindow.shared.frame.size
+    let containerSize = viewController.view.frame.size
     let constraintSize = CGSize(
       width: containerSize.width * maxWidthRatio - self.textInsets.left - self.textInsets.right,
       height: CGFloat.greatestFiniteMagnitude
@@ -194,8 +200,8 @@ open class ToastView: UIView {
     var width: CGFloat
     var height: CGFloat
 
-    let orientation = UIApplication.shared.statusBarOrientation
-    if orientation.isPortrait || !ToastWindow.shared.shouldRotateManually {
+    let orientation = UIInterfaceOrientation.portrait
+    if orientation.isPortrait {
       width = containerSize.width
       height = containerSize.height
       y = self.bottomOffsetPortrait
@@ -205,7 +211,7 @@ open class ToastView: UIView {
       y = self.bottomOffsetLandscape
     }
     if #available(iOS 11.0, *), useSafeAreaForBottomOffset {
-      y += ToastWindow.shared.safeAreaInsets.bottom
+      y += viewController.view.safeAreaInsets.bottom
     }
 
     let backgroundViewSize = self.backgroundView.frame.size
